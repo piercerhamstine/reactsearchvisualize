@@ -12,6 +12,9 @@ export default class GridCell extends Component
             isWallCell,
             isStartCell,
             isFinishCell,
+            mouseDownEvent,
+            mouseEnterEvent,
+            mouseUpEvent,
         } = this.props;
 
         const cellTag = 
@@ -21,7 +24,7 @@ export default class GridCell extends Component
             'gridcell';
 
         return(
-            <div className={`${cellTag}`}>
+            <div id={`${row}_${column}`} className={`${cellTag}`} onMouseDown={()=>mouseDownEvent(row, column)} onMouseEnter={()=>mouseEnterEvent(row, column)} onMouseUp={()=>mouseUpEvent()}>
             </div>
         );
     }

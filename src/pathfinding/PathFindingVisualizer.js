@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
-import './PathFindingVisualizer.css'
+import './PathFindingVisualizer.css';
+import { Dijkstras } from "./searchalgos/DijkstraShortestPath";
 import GridCell from "./GridCell";
 
 const ROWCOUNT = 10;
@@ -11,7 +12,7 @@ export default class PathFindingVisualizer extends Component
     constructor()
     {
         super();
-        this.state={grid: []}
+        this.state={grid: [], isMouseDown: false}
     }
 
     componentDidMount()
@@ -20,11 +21,80 @@ export default class PathFindingVisualizer extends Component
         this.setState({grid});
     }
 
+    OnMouseDownHandler(row, col)
+    {
+        const currGrid = this.state.grid;
+        const currCell = currGrid[row][col];
+        currCell.isWallCell = !currCell.isWallCell;
+
+        this.setState({grid: currGrid, isMouseDown: true});
+    }
+
+    OnMouseEnterHandler(row, col)
+    {
+        let isMouseDown = this.state.isMouseDown;
+        if(!isMouseDown)
+            return;
+        
+        let currGrid = this.state.grid;
+        let currCell = currGrid[row][col];
+        currCell.isWallCell = !currCell.isWallCell;
+        this.setState({grid: currGrid});
+    }
+
+    OnMouseUpHandler()
+    {
+        console.log("mouse up");
+        this.setState({isMouseDown: false});
+    }
+
+    RunDijkstra()
+    {
+        const {grid} = this.state;
+        const cellsVisited = Dijkstras(grid);
+        const pathCells = [];
+
+        let finalCell = cellsVisited[cellsVisited.length-1];
+        while(finalCell !== null)
+        {
+            pathCells.push(finalCell);
+            finalCell = finalCell.prevCell;
+        }
+
+        for(let i = 0; i < cellsVisited.length; ++i)
+        {
+            if(i === cellsVisited.length-1 && pathCells[0].isFinishCell)
+            {
+                setTimeout(() =>{
+                    this.UpdateFinalPath(pathCells);
+                }, 10*i);
+            }
+
+            setTimeout(() =>{
+                const cell = cellsVisited[i];
+                document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-visited';
+            }, 10*i);
+        }
+    }
+
+    UpdateFinalPath(path)
+    {
+        for(let i = 0; i < path.length; ++i)
+        {
+            setTimeout(() =>{
+                const cell = path[i];
+                document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-final';
+            }, 50*i);
+        }  
+    };
+
     render()
     {
         const {grid} = this.state;
         
         return(
+        <>
+            <button onClick={() => this.RunDijkstra()}>Start</button>
             <div className="grid">
                 {
                     grid.map((row, ndx) =>
@@ -39,30 +109,39 @@ export default class PathFindingVisualizer extends Component
                                         isStartCell={cell.isStartCell}
                                         isWallCell={cell.isWallCell}
                                         isFinishCell={cell.isFinishCell}
-                                        ></GridCell>
+                                        mouseDownEvent={ (row, column)=>{this.OnMouseDownHandler(row, column)} }
+                                        mouseEnterEvent={(row, column)=>{this.OnMouseEnterHandler(row, column)}}
+                                        mouseUpEvent={()=>this.OnMouseUpHandler()}
+                                    >
+                                    </GridCell>
                                 )
                             })
                         )
                     })
                 }
             </div>
+        </>
         )
     }
 }
 
 const InitGrid = function()
 {
-    let grid = [];
+    const grid = [];
     for(let i = 0; i < ROWCOUNT; ++i)
     {
-        let currRow = [];
+        const currRow = [];
         for(let j = 0; j < COLCOUNT; ++j)
         {
-            let cell = ConstructGridCell(i,j);
+            const cell = ConstructGridCell(i,j);
 
+            // Temp start/end cells
             if(i===0 && j===0)
+            {
                 cell.isStartCell = true;
-            else if(i === 5 && j === 5)
+                cell.distance = 0;
+            }
+            else if(i === 7 && j === 7)
                 cell.isFinishCell = true;
 
             currRow.push(cell);
@@ -74,13 +153,16 @@ const InitGrid = function()
     return grid;
 }
 
-const ConstructGridCell = function(row, column){
-    const gridCell = new GridCell({
-        column: column,
-        row: row,
+const ConstructGridCell = function(row, column)
+{    
+    return{
+        column,
+        row,
+        distance: Infinity,
+        isVisited: false,
+        prevCell: null,
         isWallCell: false,
-        isStartCell: true,
+        isStartCell: false,
         isFinishCell: false,
-    });
-    return gridCell;
+    }
 }
