@@ -11,3 +11,68 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.button
+{
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+a
+{
+    
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown > .dropdown-toggle:focus,
+a:hover
+{
+    color: rgba(122, 169, 245);
+}
+
+
+
+.container
+{
+    padding: 20px 15px;
+    display: block;
+    background-color: black;
+}
+
+.navbar-button-disabled > a
+{
+    color: rgba(252, 126, 126);
+    pointer-events: none;
+}
+
+.dropdown
+{
+    position: relative;
+}
+
+.dropdown-menu
+{
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: white;
+    padding: .75rem;
+    border-radius: .25rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+.dropdown > .dropdown-toggle:focus + .dropdown-menu
+{
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0px);
+}

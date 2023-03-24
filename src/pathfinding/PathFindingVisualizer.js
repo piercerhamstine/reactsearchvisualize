@@ -4,21 +4,68 @@ import './PathFindingVisualizer.css';
 import { Dijkstras } from "./searchalgos/DijkstraShortestPath";
 import GridCell from "./GridCell";
 
-const ROWCOUNT = 10;
-const COLCOUNT = 10;
+const ROWCOUNT = 30;
+const COLCOUNT = 60;
+
+const DEFAULTSTARTROW = 5
+const DEFAULTSTARTCOL = 5
+
+const DEFAULTFINALROW = 10
+const DEFAULTFINALCOL = 10
 
 export default class PathFindingVisualizer extends Component
 {
     constructor()
     {
         super();
-        this.state={grid: [], isMouseDown: false}
+        this.state={grid: [], buttonsToggled: true, isMouseDown: false}
     }
 
     componentDidMount()
     {
         const grid = InitGrid()
-        this.setState({grid});
+        this.setState({grid: grid});
+
+        this.LinkMenuBar()
+    }
+
+    LinkMenuBar()
+    {
+        document.getElementById("button-clear").onclick = ()=>
+        {
+            this.Reset();
+        }
+
+        document.getElementById("button-start").onclick = ()=>
+        {
+            this.RunDijkstra()
+        }
+    }
+
+    ToggleNavbarButtons()
+    {
+        if(this.state.buttonsToggled)
+        {
+            console.log("Toggled off");
+            this.state.buttonsToggled = false;
+            const elements = document.querySelectorAll(".navbar-button");
+            for(let element of elements)
+            {
+                element.classList.remove("navbar-button");
+                element.classList.add("navbar-button-disabled");
+            }
+        }
+        else
+        {
+            console.log("Toggled on");
+            this.state.buttonsToggled = true;
+            const elements = document.querySelectorAll(".navbar-button-disabled");
+            for(let element of elements)
+            {
+                element.classList.remove("navbar-button-disabled");
+                element.classList.add("navbar-button");
+            }
+        }
     }
 
     OnMouseDownHandler(row, col)
@@ -85,16 +132,61 @@ export default class PathFindingVisualizer extends Component
                 const cell = path[i];
                 document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-final';
             }, 50*i);
-        }  
+
+        }
+
+    };
+
+    // I hate this implementation of resetting the grid
+    // Need to study up and find a better solution
+    Reset()
+    {
+        const currGrid = this.state.grid;
+        for(let row of currGrid)
+        {
+            for(let cell of row)
+            {
+                let htmlElement = document.getElementById(`${cell.row}_${cell.column}`);
+                
+                if(cell.row === DEFAULTSTARTROW && cell.column === DEFAULTSTARTCOL)
+                {
+                    htmlElement.className = 'gridcell-start';
+                }
+                else if(cell.row === DEFAULTFINALROW && cell.column === DEFAULTFINALCOL)
+                {
+                    htmlElement.className = 'gridcell-finish';
+                }
+                else
+                {
+                    htmlElement.className = 'gridcell';
+                }
+            }
+        }
+        
+        const newGrid = InitGrid();
+        this.setState({grid: newGrid});
     };
 
     render()
     {
         const {grid} = this.state;
-        
+
         return(
         <>
-            <button onClick={() => this.RunDijkstra()}>Start</button>
+            <div className="container">
+                <div className="dropdown">
+                    <a className="dropdown-toggle" href="#">Algorithms</a>
+                    <div className="dropdown-menu">
+                        Content
+                    </div>
+                </div>
+                <div id="navbar-button" className="navbar-button">
+                    <a id="button-clear" href="#">Clear</a>
+                </div>
+                <div id="navbar-button" className="navbar-button">
+                    <a id="button-start" href="#">Start</a>
+                </div>
+            </div>
             <div className="grid">
                 {
                     grid.map((row, ndx) =>
@@ -104,6 +196,7 @@ export default class PathFindingVisualizer extends Component
                             {
                                 return(
                                     <GridCell
+                                        key={`${ndx}_${cellNdx}`}
                                         column={cell.column}
                                         row={cell.row}
                                         isStartCell={cell.isStartCell}
@@ -136,12 +229,12 @@ const InitGrid = function()
             const cell = ConstructGridCell(i,j);
 
             // Temp start/end cells
-            if(i===0 && j===0)
+            if(i=== DEFAULTSTARTROW && j=== DEFAULTSTARTCOL)
             {
                 cell.isStartCell = true;
                 cell.distance = 0;
             }
-            else if(i === 7 && j === 7)
+            else if(i === DEFAULTFINALROW && j === DEFAULTFINALCOL)
                 cell.isFinishCell = true;
 
             currRow.push(cell);
