@@ -176,16 +176,18 @@ export default class PathFindingVisualizer extends Component
             <div className="container">
                 <div className="dropdown">
                     <a className="dropdown-toggle" href="#">Algorithms</a>
-                    <div className="dropdown-menu">
-                        Content
+                    <div className="dropdown-menu grid-selection">
+                        <a className="dropdown-button" href="#">Dijkstra's</a>
+                        <a className="dropdown-button" href="#">A*</a>
                     </div>
-                </div>
-                <div id="navbar-button" className="navbar-button">
-                    <a id="button-clear" href="#">Clear</a>
                 </div>
                 <div id="navbar-button" className="navbar-button">
                     <a id="button-start" href="#">Start</a>
                 </div>
+                <div id="navbar-button" className="navbar-button">
+                    <a id="button-clear" href="#">Clear</a>
+                </div>
+
             </div>
             <div className="grid">
                 {

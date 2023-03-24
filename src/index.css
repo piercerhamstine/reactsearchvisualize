@@ -24,7 +24,6 @@ code {
 
 a
 {
-    
     color: white;
     text-decoration: none;
 }
@@ -40,7 +39,9 @@ a:hover
 .container
 {
     padding: 20px 15px;
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     background-color: black;
 }
 
@@ -70,9 +71,21 @@ a:hover
     transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
 }
 
+.grid-selection
+{
+    display: grid;
+}
+
+
 .dropdown > .dropdown-toggle:focus + .dropdown-menu
 {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0px);
+}
+
+.dropdown-button
+{
+    color: black;
+    text-decoration: none;
 }
