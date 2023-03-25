@@ -1,4 +1,9 @@
-import React, { Component } from "react";
+// TODO
+// user defined start/finish
+// Implement A*
+// Improve visuals
+
+import React, { Component, useEffect } from "react";
 
 import './PathFindingVisualizer.css';
 import { Dijkstras } from "./searchalgos/DijkstraShortestPath";
@@ -18,15 +23,15 @@ export default class PathFindingVisualizer extends Component
     constructor()
     {
         super();
-        this.state={grid: [], buttonsToggled: true, isMouseDown: false}
+        this.state={grid: [], selectedAlgo: "dijkstras", buttonsToggled: true, isMouseDown: false}
     }
 
     componentDidMount()
     {
         const grid = InitGrid()
         this.setState({grid: grid});
-
-        this.LinkMenuBar()
+        this.LinkMenuBar();
+        this.LinkAlgoDropDown();
     }
 
     LinkMenuBar()
@@ -38,8 +43,66 @@ export default class PathFindingVisualizer extends Component
 
         document.getElementById("button-start").onclick = ()=>
         {
-            this.RunDijkstra()
+            this.ToggleNavbarButtons();
+            this.ResetIntoStart();
         }
+    }
+
+    LinkAlgoDropDown()
+    {
+        document.getElementById("algo-dijkstras").onclick = ()=>
+        {
+            this.setState({selectedAlgo: "dijkstras"});
+            console.log("Clicked");
+        }
+
+        document.getElementById("algo-astar").onclick = ()=>
+        {
+            this.setState({selectedAlgo: "astar"});
+            console.log("clicked astar")
+        }
+    }
+
+    ResetIntoStart()
+    {
+        const currGrid = this.state.grid;
+        let newGrid = currGrid;
+
+        for(let row of currGrid)
+        {
+            for(let cell of row)
+            {
+                let htmlElement = document.getElementById(`${cell.row}_${cell.column}`);
+                let row = cell.row;
+                let column = cell.column;
+
+                const newCell = ConstructGridCell(cell.row,cell.column);
+
+                if(cell.row === DEFAULTSTARTROW && cell.column === DEFAULTSTARTCOL)
+                {
+                    newCell.isStartCell = true;
+                    newCell.distance = 0;
+                    htmlElement.className = 'gridcell-start';
+                }
+                else if(cell.row === DEFAULTFINALROW && cell.column === DEFAULTFINALCOL)
+                {
+                    newCell.isFinishCell = true;
+                    htmlElement.className = 'gridcell-finish';
+                }
+                else if(cell.isWallCell)
+                {
+                    newCell.isWallCell = true;
+                }
+                else
+                {
+                    htmlElement.className = 'gridcell';
+                }
+
+                newGrid[cell.row][cell.column] = newCell;
+            }
+        }
+        
+        this.setState({grid: newGrid}, ()=>{this.RunSelectedAlgo();});
     }
 
     ToggleNavbarButtons()
@@ -95,6 +158,21 @@ export default class PathFindingVisualizer extends Component
         this.setState({isMouseDown: false});
     }
 
+    RunSelectedAlgo()
+    {
+        let currSelectedAlgo = this.state.selectedAlgo;
+
+        switch(currSelectedAlgo)
+        {
+            case "dijkstras":
+                this.RunDijkstra();
+                break;
+            case "astar":
+            default:
+                this.RunDijkstra();
+        }
+    }
+
     RunDijkstra()
     {
         const {grid} = this.state;
@@ -128,10 +206,22 @@ export default class PathFindingVisualizer extends Component
     {
         for(let i = 0; i < path.length; ++i)
         {
-            setTimeout(() =>{
+            setTimeout(() =>
+            {
+                // BAD
+                // band-aid fix until I figure out how to properly toggle buttons when animating ends.
+                // only works when there is a possible path from start to finish
+                if(i === path.length-1)
+                {
+                    setTimeout(() =>{
+                        this.ToggleNavbarButtons();;
+                    }, 500);
+                }
+
+
                 const cell = path[i];
                 document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-final';
-            }, 50*i);
+            }, 100*i);
 
         }
 
@@ -177,8 +267,8 @@ export default class PathFindingVisualizer extends Component
                 <div className="dropdown">
                     <a className="dropdown-toggle" href="#">Algorithms</a>
                     <div className="dropdown-menu grid-selection">
-                        <a className="dropdown-button" href="#">Dijkstra's</a>
-                        <a className="dropdown-button" href="#">A*</a>
+                        <a id="algo-dijkstras" className="dropdown-button" href="#">Dijkstra's</a>
+                        <a id="algo-astar" className="dropdown-button" href="#">A*</a>
                     </div>
                 </div>
                 <div id="navbar-button" className="navbar-button">

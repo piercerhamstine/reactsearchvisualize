@@ -12,26 +12,10 @@ code {
     monospace;
 }
 
-.button
-{
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-}
-
 a
 {
     color: white;
     text-decoration: none;
-}
-
-.dropdown > .dropdown-toggle:focus,
-a:hover
-{
-    color: rgba(122, 169, 245);
 }
 
 
@@ -51,6 +35,13 @@ a:hover
     pointer-events: none;
 }
 
+/* Drop down related */
+.dropdown > .dropdown-toggle:focus,
+a:hover
+{
+    color: rgba(122, 169, 245);
+}
+
 .dropdown
 {
     position: relative;
@@ -68,7 +59,7 @@ a:hover
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
     pointer-events: none;
     transform: translateY(-10px);
-    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+    transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
 }
 
 .grid-selection
@@ -89,3 +80,11 @@ a:hover
     color: black;
     text-decoration: none;
 }
+
+/*  */
+.dropdown-menu > .dropdown-button:active
+{
+    pointer-events: auto;
+    cursor: default;
+}
+/* Drop down related */
