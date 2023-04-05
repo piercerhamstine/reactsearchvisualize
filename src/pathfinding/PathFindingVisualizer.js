@@ -7,6 +7,7 @@ import React, { Component, useEffect } from "react";
 
 import './PathFindingVisualizer.css';
 import { Dijkstras } from "./searchalgos/DijkstraShortestPath";
+import { Astar } from "./searchalgos/Astar";
 import GridCell from "./GridCell";
 
 const ROWCOUNT = 30;
@@ -169,7 +170,7 @@ export default class PathFindingVisualizer extends Component
                 break;
             case "astar":
             default:
-                this.RunDijkstra();
+                this.RunAstar();
         }
     }
 
@@ -200,6 +201,16 @@ export default class PathFindingVisualizer extends Component
                 document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-visited';
             }, 10*i);
         }
+    }
+
+    RunAstar()
+    {
+        // const {grid} = this.state;
+        // const cellsVisited = Astar(grid);
+        // const pathCells = [];
+
+        const {grid} = this.state;
+        Astar(grid);
     }
 
     UpdateFinalPath(path)
@@ -277,7 +288,6 @@ export default class PathFindingVisualizer extends Component
                 <div id="navbar-button" className="navbar-button">
                     <a id="button-clear" href="#">Clear</a>
                 </div>
-
             </div>
             <div className="grid">
                 {
