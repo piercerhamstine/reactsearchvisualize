@@ -45,7 +45,7 @@ export function Dijkstras(graph)
         for(let i = 0; i < adjacents.length; ++i)
         {
             // Change this later
-            if(adjacents[i].isVisited)
+            if(adjacents[i].isVisited || adjacents[i].isWallCell)
                 continue;
             
             const newDist = currCell.distance + 1;

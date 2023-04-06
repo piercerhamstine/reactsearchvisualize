@@ -205,12 +205,31 @@ export default class PathFindingVisualizer extends Component
 
     RunAstar()
     {
-        // const {grid} = this.state;
-        // const cellsVisited = Astar(grid);
-        // const pathCells = [];
-
         const {grid} = this.state;
-        Astar(grid);
+        const cellsVisited = Astar(grid, grid[DEFAULTSTARTROW][DEFAULTSTARTCOL], grid[DEFAULTFINALROW][DEFAULTSTARTCOL]);
+        const pathCells = [];
+
+        let finalCell = cellsVisited[cellsVisited.length-1];
+        while(finalCell !== null)
+        {
+            pathCells.push(finalCell);
+            finalCell = finalCell.prevCell;
+        }
+
+        for(let i = 0; i < cellsVisited.length; ++i)
+        {
+            if(i === cellsVisited.length-1 && pathCells[0].isFinishCell)
+            {
+                setTimeout(() =>{
+                    this.UpdateFinalPath(pathCells);
+                }, 10*i);
+            }
+
+            setTimeout(() =>{
+                const cell = cellsVisited[i];
+                document.getElementById(`${cell.row}_${cell.column}`).className = 'gridcell-visited';
+            }, 10*i);
+        }
     }
 
     UpdateFinalPath(path)
